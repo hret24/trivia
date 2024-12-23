@@ -47,3 +47,178 @@ Pay special attention to what data the frontend is expecting from each API respo
 By making notes ahead of time, you will practice the core skill of being able to read and understand code and will have a simple plan to follow to build out the endpoints of your backend API.
 
 > View the [Frontend README](./frontend/README.md) for more details.
+
+## API Documentation
+
+### Error Handling
+Errors responses are in JSON format
+```bash
+{
+    "success": False, 
+    "error": 404,
+    "message": "resource not found"
+}
+```
+
+Error types will be returned by the API when requests fail. These include:
+
+400: Bad Request 
+404: Resource Not Found 
+405: Method Not Allowed
+422: Not Processable 
+500: Internal Server Error 
+
+### Endpoints
+### GET /categories 
+
+This returns a list of categories along with a success value
+
+```bash
+curl http://127.0.0.1:5000/categories
+```
+```bash
+{
+  "categories":  {
+    "1":"Science",
+    "2":"Art",
+    "3":"Geography",
+    "4":"History",
+    "5":"Entertainment",
+    "6":"Sports"
+  },
+  "success":true
+}
+```
+
+Questions are returned and paginated in groups of 10.
+
+### DELETE /questions/{id}
+
+This deletes the question of the given ID if it exists along with a success value.
+
+```bash
+curl -X DELETE http://127.0.0.1:5000/questions/1?page=1
+```
+```bash
+{
+  "success": true
+}
+```
+
+### POST /questions/{id}
+
+This creates a new question using title, answer, category and difficulty as shown in the example below. It returns a success value.
+
+```bash
+curl http://127.0.0.1:5000/questions -X POST -H "Content-Type: application/json" -d '{"question":"What is the capital of Spain?", "answer": "Madrid","category" :"3", "difficulty":"1"}'
+```
+
+```bash
+{
+  "success": true
+}
+```
+
+### POST /search
+
+This allows the search of a question using the submitted search term and returns the results, success value, total questions.
+
+
+```bash
+curl http://127.0.0.1:5000/questions -X POST -H "Content-Type: application/json" -d '{"searchTerm":"who"}'
+```
+
+```bash
+{
+  "currentCategory":null,
+  "questions":[
+    {
+      "answer":"Maya Angelou",
+      "category":4,
+      "difficulty":2,
+      "id":5,
+      "question":"Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?"
+    },
+    {
+      "answer":"George Washington Carver",
+      "category":4,
+      "difficulty":2,
+      "id":12,
+      "question":"Who invented Peanut Butter?"
+    },
+    {
+      "answer":"Alexander Fleming",
+      "category":1,
+      "difficulty":3,
+      "id":21,
+      "question":"Who discovered penicillin?"
+    }
+  ],
+  "success":true,
+  "totalQuestions":3
+}
+```
+
+### GET /categories/{id}/questions
+
+This returns a list of questions, in the given category, category total_questions and success value
+Results are paginated in groups of 10. Include a request argument to choose page number, starting from 1.
+
+```bash
+curl http://127.0.0.1:5000/categories/3/questions
+```
+
+```bash
+{
+  "currentCategory":"Geography",
+  "questions":[
+    {
+      "answer":"Lake Victoria",
+      "category":3,
+      "difficulty":2,
+      "id":13,
+      "question":"What is the largest lake in Africa?"
+    },
+    {
+      "answer":"The Palace of Versailles",
+      "category":3,
+      "difficulty":3,
+      "id":14,
+      "question":"In which royal palace would you find the Hall of Mirrors?"},
+    {
+      "answer":"Agra",
+      "category":3,
+      "difficulty":2,
+      "id":15,
+      "question":"The Taj Mahal is located in which Indian city?"},
+    {
+      "answer":"Madrid",
+      "category":3,
+      "difficulty":1,
+      "id":24,
+      "question":"What is the capital of Spain?"}
+  ],
+  "success":true,"totalQuestions":4
+}
+```
+
+### POST /quizzes
+
+This will receive the actual question and the category and return the next question in the same category and a success value.
+
+```bash
+curl http://127.0.0.1:5000/quizzes -X POST -H "Content-Type: application/json" -d '{"quiz_category":{"type":"Geography","id":"3"}, "previous_questions":[1]}'
+```
+
+```bash
+{
+  "question":
+  {
+    "answer":"Lake Victoria",
+    "category":3,
+    "difficulty":2,"id":13,
+    "question":"What is the largest lake in Africa?"
+  },
+  "success":true
+}
+```
