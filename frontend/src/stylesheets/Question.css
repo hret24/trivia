@@ -17,6 +17,10 @@
   text-align: center;
 }
 
+.pagination-menu {
+  padding: 20px 20px;
+}
+
 .Question-holder {
   padding: 10px 20px;
   border: 2px black solid;
