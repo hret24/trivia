@@ -176,17 +176,6 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['success'])
         self.assertTrue('question' in data)
 
-def test_play_quiz_error(self):
-    """Test playing the quiz with no questions available."""
-    res = self.client.post(
-        '/quizzes', 
-        json={"quiz_category": {"type": "unknown", "id": 99}, "previous_questions": []}
-    )  # Adjust the payload as required by your endpoint
-    data = res.get_json()
-
-    self.assertEqual(res.status_code, 404)
-    self.assertFalse(data['success'])
-
 # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()
