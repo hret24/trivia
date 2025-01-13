@@ -1,6 +1,6 @@
 import os
 import unittest
-
+from dotenv import load_dotenv
 from flaskr import create_app
 from models import db, Question, Category
 
@@ -10,9 +10,11 @@ class TriviaTestCase(unittest.TestCase):
 
     def setUp(self):
         """Define test variables and initialize app."""
-        self.database_name = "trivia_test"
-        self.database_user = "haresh"
-        self.database_host = "localhost:5432"
+        load_dotenv()
+        
+        self.database_name = os.getenv('DB_TEST_NAME')
+        self.database_user = os.getenv('DB_TEST_USER')
+        self.database_host = os.getenv('DB_TEST_HOST')
         self.database_path = f"postgresql://{self.database_user}@{self.database_host}/{self.database_name}"
 
         self.app = create_app({
@@ -27,14 +29,12 @@ class TriviaTestCase(unittest.TestCase):
 
     def tearDown(self):
         """Executed after each test"""
-        with self.app.app_context():
-            db.session.remove()
-            db.drop_all()
+        pass
 
-    """
-    TODO
-    Write at least one test for each test for successful operation and for expected errors.
-    """
+    # """
+    # TODO
+    # Write at least one test for each test for successful operation and for expected errors.
+    # """
     def post_json(self, url, data):
         return self.client.post(url, json=data)
 
@@ -137,7 +137,10 @@ class TriviaTestCase(unittest.TestCase):
 
     def test_search_question_error(self):
         """Test searching for a question with no results."""
-        res = self.post_json('/questions', {"searchTerm": "nonexistent"})
+        res = self.client.post(
+            '/questions', 
+            json={"searchTerm": "nonexistent"}
+            )
         data = res.get_json()
 
         self.assertEqual(res.status_code, 404)
@@ -173,22 +176,16 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['success'])
         self.assertTrue('question' in data)
 
-    def test_play_quiz_error(self):
-        """Test playing the quiz with no questions available."""
-        with self.app.app_context():
-            Question.query.delete()
-            db.session.commit()
+def test_play_quiz_error(self):
+    """Test playing the quiz with no questions available."""
+    res = self.client.post(
+        '/quizzes', 
+        json={"quiz_category": {"type": "unknown", "id": 99}, "previous_questions": []}
+    )  # Adjust the payload as required by your endpoint
+    data = res.get_json()
 
-        quiz_data = {
-            "previous_questions": [],
-            "quiz_category": {"id": 1}
-        }
-        res = self.post_json('/quizzes', quiz_data)
-        data = res.get_json()
-
-        self.assertEqual(res.status_code, 200)
-        self.assertTrue(data['success'])
-        self.assertIsNone(data.get('question'))
+    self.assertEqual(res.status_code, 404)
+    self.assertFalse(data['success'])
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
