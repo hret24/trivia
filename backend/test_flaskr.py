@@ -59,6 +59,15 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
         self.assertEqual(len(data['categories']), 0)
+        
+        with self.app.app_context():
+            categories = [
+                Category(type='Science'),
+                Category(type='Art'),
+                Category(type='Geography'),
+            ]
+            db.session.add_all(categories)
+            db.session.commit()
 
     def test_get_paginated_questions(self):
         """Test retrieving paginated questions."""
